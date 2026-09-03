@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Takshashila · Trend State</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#000;--bg2:#0a0a0a;--bg3:#111;--bg4:#1a1a1a;
+  --card:#0d0d0d;--card2:#141414;
+  --border:#1f1f1f;--border2:#2a2a2a;
+  --text:#e8eaed;--text2:#8c9099;--text3:#4a4d55;
+  --accent:#4f8ef7;--accent2:#7aadff;
+  --green:#10b981;--green2:#34d399;
+  --red:#ef4444;--red2:#f87171;
+  --amber:#f59e0b;--amber2:#fbbf24;
+  --purple:#8b5cf6;--teal:#06b6d4;
+  --r:10px;--r2:14px;
+  --shadow:0 4px 28px rgba(0,0,0,.5);--shadow2:0 2px 14px rgba(0,0,0,.3);
+  --th-text:#b0b4be;--th-bg:#141418;--th-border:#2a2d36;
+}
+[data-theme=light]{
+  --bg:#f0f4fb;--bg2:#e6edf8;--bg3:#dce5f4;--bg4:#cfd9ed;
+  --card:#fff;--card2:#f4f8ff;
+  --border:#c4d4ea;--border2:#b8cbdf;
+  --text:#0d1a30;--text2:#3a5278;--text3:#7a96bb;
+  --accent:#1d6ff5;--accent2:#2563eb;
+  --green:#059669;--green2:#10b981;
+  --red:#dc2626;--red2:#ef4444;
+  --amber:#d97706;--amber2:#f59e0b;
+  --purple:#7c3aed;--teal:#0d9488;
+  --shadow:0 4px 20px rgba(30,60,120,.12);--shadow2:0 2px 10px rgba(30,60,120,.08);
+  --th-text:#2a4070;--th-bg:#dae4f5;--th-border:#b0c4df;
+}
+[data-theme=sepia]{
+  --bg:#f5efe0;--bg2:#ede4d0;--bg3:#e3d8c0;--bg4:#d6c9ab;
+  --card:#faf5eb;--card2:#f2ebda;
+  --border:#c8b89a;--border2:#b8a488;
+  --text:#3a2e1e;--text2:#6b5640;--text3:#9e845f;
+  --accent:#7b5ea7;--accent2:#9470c5;
+  --green:#4a7c59;--green2:#5e9e72;
+  --red:#b94040;--red2:#d45555;
+  --amber:#a07030;--amber2:#c08840;
+  --purple:#7b5ea7;--teal:#3a7a80;
+  --shadow:0 4px 20px rgba(80,50,20,.14);--shadow2:0 2px 10px rgba(80,50,20,.09);
+  --th-text:#5a4020;--th-bg:#e0d4b8;--th-border:#c0a880;
+}
+[data-theme=black]{
+  --bg:#000;--bg2:#050505;--bg3:#0a0a0a;--bg4:#0f0f0f;
+  --card:#050505;--card2:#080808;
+  --border:#141414;--border2:#1a1a1a;
+  --text:#fff;--text2:#909090;--text3:#3a3a3a;
+  --accent:#00aaff;--accent2:#33bbff;
+  --green:#00cc77;--green2:#00ee88;
+  --red:#ff3333;--red2:#ff5555;
+  --amber:#ffaa00;--amber2:#ffbb33;
+  --purple:#aa55ff;--teal:#00ccdd;
+  --shadow:0 4px 28px rgba(0,0,0,.9);--shadow2:0 2px 14px rgba(0,0,0,.8);
+  --th-text:#c0c0c0;--th-bg:#0d0d0d;--th-border:#222;
+}
+[data-theme=aurora]{
+  --bg:#0c0e1a;--bg2:#111428;--bg3:#171a30;--bg4:#1e2140;
+  --card:#10132a;--card2:#151830;
+  --border:#252a4a;--border2:#2e3560;
+  --text:#e2e8ff;--text2:#8890cc;--text3:#3d4470;
+  --accent:#7c6ef5;--accent2:#a090ff;
+  --green:#00d4a0;--green2:#00f0b8;
+  --red:#ff5577;--red2:#ff7799;
+  --amber:#ffb830;--amber2:#ffcc55;
+  --purple:#bf7fff;--teal:#00d4e8;
+  --shadow:0 4px 28px rgba(0,0,40,.7);--shadow2:0 2px 14px rgba(0,0,40,.5);
+  --th-text:#a8b4e8;--th-bg:#161a35;--th-border:#2a3060;
+}
+
+/* settings panel */
+#settingsPanel{display:none;position:fixed;top:54px;right:0;width:280px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--r2) 0 0 var(--r2);box-shadow:var(--shadow);
+  z-index:200;padding:18px;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+#settingsPanel.open{display:block}
+.sp-title{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.4px;
+  margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.sp-close{cursor:pointer;font-size:16px;color:var(--text3);line-height:1}
+.sp-close:hover{color:var(--text)}
+.sp-section{margin-bottom:18px}
+.sp-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;
+  margin-bottom:8px;font-family:'DM Mono',monospace}
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.theme-swatch{height:36px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;position:relative}
+.theme-swatch:hover{transform:scale(1.06)}
+.theme-swatch.active{border-color:var(--accent)}
+.theme-swatch[data-t=dark]{background:linear-gradient(135deg,#0a0a0a,#1f1f1f);color:#8c9099}
+.theme-swatch[data-t=day]{background:linear-gradient(135deg,#f0f4fb,#dce5f4);color:#3a5278}
+.theme-swatch[data-t=sepia]{background:linear-gradient(135deg,#f5efe0,#e3d8c0);color:#6b5640}
+.theme-swatch[data-t=black]{background:#000;color:#666;border-color:#141414}
+.theme-swatch.active[data-t=black]{border-color:#00aaff}
+.theme-swatch[data-t=other]{background:linear-gradient(135deg,#1a0533,#0a1a3a,#001a0d);color:#aaa}
+.theme-label{margin-top:4px;font-size:8px;text-align:center;color:var(--text3);font-family:'DM Mono',monospace}
+.font-row{display:flex;align-items:center;gap:8px}
+.font-dec,.font-inc{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg3);color:var(--text);cursor:pointer;font-size:16px;display:flex;align-items:center;
+  justify-content:center;transition:all .12s;flex-shrink:0}
+.font-dec:hover,.font-inc:hover{border-color:var(--accent);color:var(--accent)}
+.font-val{flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;
+  color:var(--accent);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px 0}
+.font-slider{width:100%;margin-top:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;min-height:100vh}
+.mono{font-family:'DM Mono',monospace}
+.main{padding:16px 18px;max-width:1900px;margin:0 auto}
+
+/* topbar */
+.topbar{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);
+  padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:15px;letter-spacing:-.2px}
+.brand span{color:var(--accent)}
+.topbar-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:8px;
+  padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif}
+.topbar-btn:hover{border-color:var(--border2);color:var(--text)}
+.topbar-btn.primary{background:linear-gradient(135deg,rgba(79,142,247,.2),rgba(139,92,246,.14));
+  border-color:rgba(79,142,247,.4);color:var(--accent2)}
+#dataInfo{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.spacer{flex:1}
+
+/* kpi row */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--accent))}
+.kpi-l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-bottom:6px}
+.kpi-v{font-size:20px;font-weight:800;font-family:'DM Mono',monospace;color:var(--kc,var(--text))}
+.kpi-s{font-size:10px;color:var(--text2);margin-top:4px}
+
+/* card */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.card-h{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-t{font-size:13px;font-weight:700}
+.card-b{padding:14px 16px}
+.badge{font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border-radius:100px;background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+
+/* grid layout for breadth cards */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+@media(max-width:900px){.grid3{grid-template-columns:1fr}}
+
+/* breadth bar */
+.bd-bar{display:flex;height:22px;border-radius:6px;overflow:hidden;margin:8px 0 6px}
+.bd-seg{display:flex;align-items:center;justify-content:center;font-size:9px;font-family:'DM Mono',monospace;color:#0a0a0a;font-weight:700}
+.bd-legend{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;color:var(--text2)}
+.bd-legend span.dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle}
+
+/* trend pill */
+.pill{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;display:inline-block;white-space:nowrap}
+.p-su{background:rgba(16,185,129,.18);color:var(--green2);border:1px solid rgba(16,185,129,.35)}
+.p-u {background:rgba(16,185,129,.10);color:var(--green);border:1px solid rgba(16,185,129,.22)}
+.p-s {background:rgba(140,144,153,.14);color:var(--text2);border:1px solid var(--border2)}
+.p-d {background:rgba(239,68,68,.10);color:var(--red);border:1px solid rgba(239,68,68,.22)}
+.p-sd{background:rgba(239,68,68,.18);color:var(--red2);border:1px solid rgba(239,68,68,.35)}
+.p-nd{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+
+/* score chip — ported verbatim from the main dashboard's sc() function,
+   which is what actually renders every score cell there (GQVM, Growth,
+   Quality, Value, Momentum, Pullback, Breakout, Conviction, etc.) —
+   NOT the scorePill() function, which exists in that file but is unused
+   dead code. 7-tier bucket system at 95/80/65/50/35/20, not a 3-tier one. */
+.sc{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px}
+.sc95,.sc90{background:rgba(16,185,129,.25);color:var(--green)}
+.sc80,.sc75{background:rgba(16,185,129,.15);color:var(--green2)}
+.sc65,.sc60{background:rgba(245,158,11,.18);color:var(--amber)}
+.sc50,.sc45{background:rgba(245,158,11,.10);color:var(--amber2)}
+.sc35,.sc30{background:rgba(239,68,68,.12);color:var(--red)}
+.sc20,.sc05,.sclo{background:rgba(239,68,68,.20);color:var(--red2)}
+.scna{color:var(--text3)}
+
+/* rank text — same tiering as the main dashboard's rankStr()/rotStr() */
+.ri{font-family:'DM Mono',monospace;font-size:10.5px}
+.rk-top{color:var(--green);font-weight:700}
+.rk-good{color:var(--green2)}
+.rk-mid{color:var(--text2)}
+.rk-low{color:var(--amber)}
+.rk-bot{color:var(--red)}
+.neu{color:var(--text3)}
+
+/* table */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl-scroll{max-height:min(80vh, 900px);overflow-y:auto}
+.tbl-scroll-tall{max-height:min(160vh, 1800px);overflow-y:auto}
+
+/* multi-select filter dropdowns (Short/Medium/Long trend state) */
+.msel{position:relative;display:inline-block}
+.msel-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:7px;
+  padding:7px 10px;font-size:11px;font-family:'Outfit',sans-serif;cursor:pointer;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.msel-btn::after{content:'▾';font-size:9px;color:var(--text3);flex:none}
+.msel-panel{display:none;position:fixed;background:var(--card);
+  border:1px solid var(--border2);border-radius:8px;padding:6px;z-index:200;
+  width:max-content;min-width:150px;max-width:min(92vw,300px);
+  box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.msel.open .msel-panel{display:block}
+.msel-opt{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:5px;font-size:11px;
+  cursor:pointer;white-space:nowrap;color:var(--text)}
+.msel-opt:hover{background:var(--bg3)}
+.msel-opt input{margin:0}
+.msel-clear{font-size:9.5px;color:var(--accent2);text-align:right;padding:5px 6px 1px;cursor:pointer;
+  border-top:1px solid var(--border);margin-top:3px}
+tbody tr[data-clickable]{cursor:pointer}
+tbody tr.row-selected{background:rgba(79,142,247,.12)}
+tbody tr.row-selected td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+thead th{position:sticky;top:0;background:var(--th-bg);color:var(--th-text);font-size:9.5px;text-transform:uppercase;
+  letter-spacing:.6px;font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--th-border);cursor:pointer;white-space:nowrap}
+thead th:hover{color:var(--accent2)}
+thead th.sort-asc::after{content:' ▲';color:var(--accent)}
+thead th.sort-desc::after{content:' ▼';color:var(--accent)}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr:hover{background:var(--bg3)}
+
+/* frozen first column — Stock Trend States table only */
+#stockTable thead th:first-child{position:sticky;left:0;z-index:3;background:var(--th-bg)}
+#stockTable tbody td:first-child{position:sticky;left:0;z-index:1;background:var(--card)}
+#stockTable tbody tr:hover td:first-child{background:var(--bg3)}
+#stockTable thead th:first-child,#stockTable tbody td:first-child{
+  box-shadow:2px 0 4px -2px rgba(0,0,0,.35);border-right:1px solid var(--border2)}
+.num{font-family:'DM Mono',monospace;text-align:right}
+.pos{color:var(--green);font-weight:600} .neg{color:var(--red);font-weight:600}
+
+/* controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.controls select,.controls input{background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  border-radius:7px;padding:7px 10px;font-size:11px;font-family:'Outfit',sans-serif}
+.controls input{min-width:180px}
+.ext-col{display:none}
+#stockTable.show-ext .ext-col{display:table-cell}
+
+/* empty state */
+#emptyState{text-align:center;padding:60px 20px;color:var(--text2)}
+#emptyState .big{font-size:34px;margin-bottom:10px}
+.drop{border:1.5px dashed var(--border2);border-radius:10px;padding:26px;margin-top:16px;cursor:pointer;transition:.15s}
+.drop:hover{border-color:var(--accent);background:rgba(79,142,247,.05)}
+
+.sh{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sh .dot{width:5px;height:5px;background:var(--accent);border-radius:50%}
+.sh .line{flex:1;height:1px;background:var(--border)}
+#app{display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Takshashila · <span>Trend State</span></div>
+  <button class="topbar-btn primary" onclick="document.getElementById('fileIn').click()">📂 Load takshashila_trend_state.json</button>
+  <input type="file" id="fileIn" accept=".json" style="display:none" onchange="handleFile(event)">
+  <div id="dataInfo">No file loaded yet</div>
+  <div class="spacer"></div>
+  <button class="topbar-btn" id="settingsBtn" onclick="toggleSettings()">⚙ Settings</button>
+</div>
+
+<div id="settingsPanel">
+  <div class="sp-title">Settings <span class="sp-close" onclick="toggleSettings()">✕</span></div>
+  <div class="sp-section">
+    <div class="sp-label">Theme</div>
+    <div class="theme-grid">
+      <div><div class="theme-swatch" data-t="dark" onclick="applyTheme('dark')" title="Dark">🌙</div><div class="theme-label">Dark</div></div>
+      <div><div class="theme-swatch" data-t="day" onclick="applyTheme('day')" title="Day">☀️</div><div class="theme-label">Day</div></div>
+      <div><div class="theme-swatch" data-t="sepia" onclick="applyTheme('sepia')" title="Sepia">📜</div><div class="theme-label">Sepia</div></div>
+      <div><div class="theme-swatch" data-t="black" onclick="applyTheme('black')" title="Black">⬛</div><div class="theme-label">Black</div></div>
+      <div><div class="theme-swatch" data-t="other" onclick="applyTheme('other')" title="Aurora">🌌</div><div class="theme-label">Aurora</div></div>
+    </div>
+  </div>
+  <div class="sp-section">
+    <div class="sp-label">Font Size</div>
+    <div class="font-row">
+      <button class="font-dec" onclick="adjustFont(-1)">−</button>
+      <div class="font-val" id="fontVal">13px</div>
+      <button class="font-inc" onclick="adjustFont(1)">+</button>
+    </div>
+    <input type="range" class="font-slider" id="fontSlider" min="10" max="18" value="13" oninput="setFont(this.value)">
+  </div>
+</div>
+
+<div class="main">
+
+  <div id="emptyState">
+    <div class="big">📈</div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:6px">Load your trend-state JSON to begin</div>
+    <div style="font-size:12px;color:var(--text3)">Generated by <code class="mono">trend_state.py</code> as <code class="mono">takshashila_trend_state.json</code> — a companion file, separate from the main scoring JSON.</div>
+    <div class="drop" onclick="document.getElementById('fileIn').click()"
+         ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+         ondragleave="this.style.borderColor='var(--border2)'"
+         ondrop="event.preventDefault();handleFile({target:{files:event.dataTransfer.files}})">
+      or drop the .json file here
+    </div>
+  </div>
+
+  <div id="app">
+
+    <div class="controls" style="margin-top:2px">
+      <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600">Breadth &amp; Overview Universe:</span>
+      <select id="breadthUniverse" onchange="applyBreadthUniverse()"></select>
+      <span id="breadthUniverseNote" style="font-size:10.5px;color:var(--text3)"></span>
+    </div>
+
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <div class="sh"><div class="dot"></div>Trend Breadth by Timeframe<div class="line"></div></div>
+    <div class="grid3" id="breadthCards"></div>
+
+    <div class="sh" id="signalHeading" style="display:none"><div class="dot"></div>Active Scanner Signals (Takshashila)<div class="line"></div></div>
+    <div class="kpi-row" id="signalRow" style="display:none"></div>
+
+    <div class="card">
+      <div class="card-h">
+        <div class="card-t">🌡️ Sector Trend Rollup</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="methodNote" style="font-size:9.5px;color:var(--text3);max-width:520px" class="mono"></span>
+          <div class="badge" id="sectorBadge">—</div>
+        </div>
+      </div>
+      <div style="padding:0 16px" id="sectorScopeNote"></div>
+      <div class="tbl-wrap"><table id="sectorTable">
+        <thead><tr>
+          <th data-k="sector_name">Sector</th><th data-k="Stocks" class="num" data-tip="Sample size behind this row">N</th>
+          <th data-k="W_Short" class="num" data-tip="Cap+volatility-weighted, not a plain average">W-Short</th>
+          <th data-k="W_Medium" class="num">W-Medium</th>
+          <th data-k="W_Long" class="num">W-Long</th>
+          <th data-k="W_Composite" class="num">W-Composite</th>
+          <th data-k="Simple_Composite" class="num" data-tip="Old-style equal-weight average, shown for comparison">Simple Avg</th>
+          <th data-k="Composite_Shrunk" class="num" data-tip="W-Composite pulled toward the universe mean when N is thin — this is the fair cross-sector number">Shrunk Composite</th>
+          <th data-k="Confidence">Confidence</th>
+        </tr></thead>
+        <tbody id="sectorBody"></tbody>
+      </table></div>
+      <div style="padding:8px 16px;font-size:10px;color:var(--text3)">Click a row to filter Industry Rollup + Stock Trend States below to that sector.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><div class="card-t">🔬 Industry Trend Rollup</div><div class="badge" id="industryBadge">—</div></div>
+      <div class="card-b" style="padding-bottom:0">
+        <div class="controls">
+          <input type="text" id="industrySearch" placeholder="Search industry…" oninput="renderIndustryTable(currentBreadthStats)">
+          <span id="industryScopeNote" style="font-size:11px;color:var(--accent2)"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap tbl-scroll"><table id="industryTable">
+        <thead><tr>
+          <th data-k="Industry Name">Industry</th><th data-k="Stocks" class="num">N</th>
+          <th data-k="W_Short" class="num">W-Short</th>
+          <th data-k="W_Medium" class="num">W-Medium</th>
+          <th data-k="W_Long" class="num">W-Long</th>
+          <th data-k="W_Composite" class="num">W-Composite</th>
+          <th data-k="Simple_Composite" class="num">Simple Avg</th>
+          <th data-k="Composite_Shrunk" class="num">Shrunk Composite</th>
+          <th data-k="Confidence">Confidence</th>
+        </tr></thead>
+        <tbody id="industryBody"></tbody>
+      </table></div>
+      <div style="padding:8px 16px;font-size:10px;color:var(--text3)">Click a row to filter Stock Trend States below to that industry.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <div class="card-t">📋 Stock Trend States</div>
+        <div class="badge" id="stockBadge">—</div>
+      </div>
+      <div class="card-b" style="padding-bottom:0">
+        <div class="controls">
+          <input type="text" id="searchBox" placeholder="Search stock / sector…" oninput="renderStockTable()">
+          <select id="sectorFilter" onchange="onManualSectorFilterChange()"><option value="">All Sectors</option></select>
+          <select id="industryFilter" onchange="onManualIndustryFilterChange()"><option value="">All Industries</option></select>
+          <select id="stageFilter" onchange="renderStockTable()"><option value="">All Stages</option></select>
+          <select id="alignFilter" onchange="renderStockTable()"><option value="">All Alignments</option></select>
+          <div class="msel" id="shortTrendFilter"></div>
+          <div class="msel" id="mediumTrendFilter"></div>
+          <div class="msel" id="longTrendFilter"></div>
+          <select id="indexFilter" onchange="renderStockTable()"><option value="">All Indices</option></select>
+          <select id="signalFilter" onchange="renderStockTable()" style="display:none">
+            <option value="">All Signals</option>
+            <option value="SIG_PB">Pullback (PB) only</option>
+            <option value="SIG_BO">Breakout (BO) only</option>
+            <option value="SIG_CO">Consolidation (CO) only</option>
+            <option value="ANY">Any active signal</option>
+            <option value="MULTI">Multi-signal (2+)</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);cursor:pointer;user-select:none">
+            <input type="checkbox" id="extToggle" onchange="toggleExtCols()"> Show Scores &amp; Ranks
+          </label>
+        </div>
+        <div class="controls" id="scoreFilterRow">
+          <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600">Min Score:</span>
+          <select id="fGqvm" onchange="renderStockTable()" data-key="S_GQVM"><option value="">GQVM: Any</option></select>
+          <select id="fGrowth" onchange="renderStockTable()" data-key="S_Growth"><option value="">Growth: Any</option></select>
+          <select id="fQuality" onchange="renderStockTable()" data-key="S_Quality"><option value="">Quality: Any</option></select>
+          <select id="fValue" onchange="renderStockTable()" data-key="S_Value"><option value="">Value: Any</option></select>
+          <select id="fMom" onchange="renderStockTable()" data-key="S_Mom"><option value="">Momentum: Any</option></select>
+          <select id="fConv" onchange="renderStockTable()" data-key="Conviction_Score"><option value="">Conviction: Any</option></select>
+          <select id="fComposite" onchange="renderStockTable()" data-key="Trend_Composite_Score"><option value="">Composite: Any</option></select>
+          <button class="topbar-btn" onclick="resetScoreFilters()">✕ Reset Scores</button>
+          <div class="spacer"></div>
+          <button class="topbar-btn primary" onclick="exportToExcel()">⬇ Export to Excel</button>
+        </div>
+      </div>
+      <div class="tbl-wrap tbl-scroll-tall"><table id="stockTable">
+        <thead><tr>
+          <th data-k="Stock Name">Stock</th><th data-k="sector_name">Sector</th>
+          <th data-k="Current Price" class="num">Price</th>
+          <th data-k="Day change %" class="num">Day %</th>
+          <th data-k="Week change %" class="num">Week %</th>
+          <th data-k="Market Capitalization" class="num">MCap (₹Cr)</th>
+          <th data-k="Trend_Short_Score" class="num">Short</th>
+          <th data-k="Trend_Medium_Score" class="num">Medium</th>
+          <th data-k="Trend_Long_Score" class="num">Long</th>
+          <th data-k="Market_Stage">Stage</th>
+          <th data-k="Trend_Composite_Score" class="num">Composite</th>
+          <th data-k="Trend_Alignment">Alignment</th>
+          <th data-k="Conviction_Score" class="num">Conviction</th>
+          <th data-k="S_GQVM" class="num ext-col">GQVM</th>
+          <th data-k="S_Growth" class="num ext-col">Growth</th>
+          <th data-k="S_Quality" class="num ext-col">Quality</th>
+          <th data-k="S_Value" class="num ext-col">Value</th>
+          <th data-k="S_Mom" class="num ext-col">Momentum</th>
+          <th data-k="S_Pullback" class="num ext-col">Pullback</th>
+          <th data-k="SIG_PB" class="ext-col" data-tip="Active RSI2-Pullback scanner hit">PB Sig</th>
+          <th data-k="S_Breakout" class="num ext-col">Breakout</th>
+          <th data-k="SIG_BO" class="ext-col" data-tip="Active Breakout scanner hit">BO Sig</th>
+          <th data-k="S_Consol" class="num ext-col">Consol.</th>
+          <th data-k="SIG_CO" class="ext-col" data-tip="Active ADX-Coil/Consolidation scanner hit">CO Sig</th>
+          <th data-k="Month Change %" class="num ext-col">Month %</th>
+          <th data-k="Qtr Change %" class="num ext-col">Qtr %</th>
+          <th data-k="% Distance from 52week high" class="num ext-col">From 52W High</th>
+          <th data-k="% Distance from 52week low" class="num ext-col">From 52W Low</th>
+          <th data-k="Sec_Rot" class="num ext-col">Sector Rank</th>
+          <th data-k="Rank_In_Sector" class="num ext-col">In-Sector Rank</th>
+          <th data-k="Ind_Rot" class="num ext-col">Industry Rank</th>
+          <th data-k="Rank_In_Industry" class="num ext-col">In-Industry Rank</th>
+          <th data-k="Number Of Shares Qtr End" class="num ext-col">Num Shares</th>
+        </tr></thead>
+        <tbody id="stockBody"></tbody>
+      </table></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let DATA=null, sortKey='Trend_Composite_Score', sortDir=-1;
+let sectorSortKey='Composite_Shrunk', sectorSortDir=-1;
+let industrySortKey='Composite_Shrunk', industrySortDir=-1;
+
+// ── Generic sort helpers, shared by all three tables ──────────────────────
+// dir: 1 = ascending, -1 = descending. Nulls/undefined always sink to the
+// bottom regardless of direction (so an empty cell never looks like the
+// "smallest" or gets buried by accident depending on which way you sorted).
+function sortRows(rows, key, dir){
+  if(!key) return rows;
+  return [...rows].sort((a,b)=>{
+    let av=a[key], bv=b[key];
+    // Confidence is a categorical label (High/Medium/Low) with no natural
+    // alphabetical order worth sorting by — sort on the numeric
+    // Credibility_Weight that actually drives that label instead.
+    if(key==='Confidence'){ av=a.Credibility_Weight; bv=b.Credibility_Weight; }
+    const aNull = av===null||av===undefined||av==='';
+    const bNull = bv===null||bv===undefined||bv==='';
+    if(aNull && bNull) return 0;
+    if(aNull) return 1;
+    if(bNull) return -1;
+    if(typeof av==='string' || typeof bv==='string'){
+      return String(av).localeCompare(String(bv)) * dir;
+    }
+    return (av-bv) * dir;
+  });
+}
+function markSorted(tableSel, key, dir){
+  document.querySelectorAll(`${tableSel} thead th`).forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.k===key) th.classList.add(dir===1 ? 'sort-asc' : 'sort-desc');
+  });
+}
+function wireSortable(tableSel, getState, setState, rerender){
+  document.querySelectorAll(`${tableSel} thead th[data-k]`).forEach(th=>{
+    th.addEventListener('click',()=>{
+      const k=th.dataset.k;
+      let {key,dir}=getState();
+      dir = (key===k) ? dir*-1 : -1;
+      key = k;
+      setState(key,dir);
+      markSorted(tableSel, key, dir);
+      rerender();
+    });
+  });
+}
+
+function toggleSettings(){ document.getElementById('settingsPanel').classList.toggle('open'); }
+function applyTheme(t){
+  const themeMap={dark:'dark',day:'light',sepia:'sepia',black:'black',other:'aurora'};
+  document.documentElement.setAttribute('data-theme', themeMap[t]||t);
+  localStorage.setItem('tk-trend-theme', t);
+  updateThemeSwatches();
+}
+function updateThemeSwatches(){
+  const cur=localStorage.getItem('tk-trend-theme')||'dark';
+  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.toggle('active', s.dataset.t===cur));
+}
+function adjustFont(delta){
+  const el=document.getElementById('fontSlider');
+  setFont(Math.min(18,Math.max(10, Number(el.value)+delta)));
+}
+function setFont(size){
+  document.body.style.fontSize=size+'px';
+  document.getElementById('fontVal').textContent=size+'px';
+  document.getElementById('fontSlider').value=size;
+  localStorage.setItem('tk-trend-font', size);
+}
+(function initSettings(){
+  const t=localStorage.getItem('tk-trend-theme')||'dark';
+  applyTheme(t);
+  const f=localStorage.getItem('tk-trend-font')||13;
+  setFont(f);
+})();
+
+function handleFile(evt){
+  const file=evt.target.files[0];
+  if(!file) return;
+  if(!file.name.endsWith('.json')){ alert('Please select a .json file'); return; }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const json=JSON.parse(e.target.result);
+      if(!json.stocks){ alert('This does not look like a takshashila_trend_state.json file (missing "stocks" array).'); return; }
+      DATA=json;
+      document.getElementById('dataInfo').textContent = `✅ ${json.date||''} · ${json.stocks.length} stocks · v${json.version||'?'}`;
+      document.getElementById('emptyState').style.display='none';
+      document.getElementById('app').style.display='block';
+      render();
+    }catch(err){
+      alert('Could not parse JSON: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+const PILL_CLASS={
+  'Strong Uptrend':'p-su','Uptrend':'p-u','Sideways':'p-s',
+  'Downtrend':'p-d','Strong Downtrend':'p-sd','No Data':'p-nd'
+};
+function pill(label){
+  return `<span class="pill ${PILL_CLASS[label]||'p-nd'}">${label||'—'}</span>`;
+}
+function fmtNum(v,d=2){ return (v===null||v===undefined||isNaN(v)) ? '—' : Number(v).toFixed(d); }
+function pctClass(v){ return v>0?'pos':(v<0?'neg':''); }
+
+function render(){
+  populateBreadthUniverseSelector();
+  populateFilters();
+  applyBreadthUniverse();
+  renderSignalStrip();
+  renderStockTable();
+  // Show the default sort indicator on first load (matches the actual
+  // default order each table renders in before any header is clicked).
+  markSorted('#stockTable', sortKey, sortDir);
+  markSorted('#sectorTable', sectorSortKey, sectorSortDir);
+  markSorted('#industryTable', industrySortKey, industrySortDir);
+}
+
+// ── Breadth Universe selector ──────────────────────────────────────────────
+// The top KPI row + breadth-by-timeframe cards were originally always
+// computed over the FULL scan universe (~1700-1750 stocks incl. microcaps/
+// illiquid names), which skews "breadth" pessimistic/noisy compared to a
+// tracked index. This lets you scope both to a specific index (defaults to
+// whichever of Nifty Total Market / Nifty 500 / Nifty 750 is present in your
+// index_constituents.yaml) instead, computed live from the Idx_* flags
+// already on each stock — no backend change needed.
+function populateBreadthUniverseSelector(){
+  const sel=document.getElementById('breadthUniverse');
+  const meta=DATA.index_meta||[];
+  sel.innerHTML = `<option value="ALL">All Scanned Stocks (${DATA.stocks.length})</option>` +
+    meta.map(m=>`<option value="${m.key}">${m.label} (${m.count})</option>`).join('');
+
+  // Best default: prefer a "Total Market"/"750" labeled index, then "500",
+  // else fall back to "All Scanned Stocks" (i.e. today's uploaded JSON,
+  // which predates index_meta, behaves exactly as it always has).
+  const byPriority = (re) => meta.find(m => re.test(m.label));
+  const preferred = byPriority(/total market|750/i) || byPriority(/\b500\b/i);
+  sel.value = preferred ? preferred.key : 'ALL';
+}
+
+function computeBreadthStats(idxKey){
+  const stocks = (idxKey==='ALL' || !idxKey)
+    ? DATA.stocks
+    : DATA.stocks.filter(s => Number(s[idxKey])===1);
+
+  const bucket = () => ({strong_uptrend:0, uptrend:0, sideways:0, downtrend:0, strong_downtrend:0});
+  const KEYMAP = {'Strong Uptrend':'strong_uptrend','Uptrend':'uptrend','Sideways':'sideways',
+                  'Downtrend':'downtrend','Strong Downtrend':'strong_downtrend'};
+  const breadth = {short:bucket(), medium:bucket(), long:bucket()};
+  const alignment = {};
+  let compositeSum=0, compositeN=0;
+
+  stocks.forEach(s=>{
+    if(KEYMAP[s.Trend_Short]) breadth.short[KEYMAP[s.Trend_Short]]++;
+    if(KEYMAP[s.Trend_Medium]) breadth.medium[KEYMAP[s.Trend_Medium]]++;
+    if(KEYMAP[s.Trend_Long]) breadth.long[KEYMAP[s.Trend_Long]]++;
+    if(s.Trend_Alignment) alignment[s.Trend_Alignment] = (alignment[s.Trend_Alignment]||0)+1;
+    if(s.Trend_Composite_Score!==null && s.Trend_Composite_Score!==undefined && !isNaN(s.Trend_Composite_Score)){
+      compositeSum += Number(s.Trend_Composite_Score); compositeN++;
+    }
+  });
+
+  return {
+    stocks,
+    total: stocks.length,
+    breadth, alignment,
+    avgComposite: compositeN ? compositeSum/compositeN : null,
+    isFullUniverse: (idxKey==='ALL' || !idxKey),
+  };
+}
+
+let currentBreadthStats = null;
+let sectorRollupScope = null;   // sector name clicked in the Sector Rollup table, or null
+
+function applyBreadthUniverse(){
+  const idxKey = document.getElementById('breadthUniverse').value;
+  currentBreadthStats = computeBreadthStats(idxKey);
+  const note=document.getElementById('breadthUniverseNote');
+  note.textContent = currentBreadthStats.isFullUniverse
+    ? '— includes microcaps/illiquid names; switch above for a cleaner read'
+    : `— ${currentBreadthStats.total} constituents currently in this scan`;
+  renderKpis(currentBreadthStats);
+  renderBreadthCards(currentBreadthStats);
+  renderSectorTable(currentBreadthStats);
+  renderIndustryTable(currentBreadthStats);
+}
+
+// ── Simple per-stock-average rollup, used whenever the Sector/Industry
+// tables are scoped (either by the Breadth Universe selector, or by
+// clicking a sector row) — i.e. whenever we can't use the main script's
+// precomputed cap+vol-weighted/shrinkage rollup, which only exists for the
+// full scan universe. ──
+function computeGroupRollup(stocks, groupField, outKey){
+  const groups = {};
+  stocks.forEach(s=>{
+    const g = s[groupField];
+    if(!g) return;
+    if(!groups[g]) groups[g] = {n:0, sShort:0,cShort:0, sMedium:0,cMedium:0, sLong:0,cLong:0, sComp:0,cComp:0};
+    const G = groups[g];
+    G.n++;
+    const addIf=(val,sk,ck)=>{ if(val!==null&&val!==undefined&&!isNaN(val)){ G[sk]+=Number(val); G[ck]++; } };
+    addIf(s.Trend_Short_Score,'sShort','cShort');
+    addIf(s.Trend_Medium_Score,'sMedium','cMedium');
+    addIf(s.Trend_Long_Score,'sLong','cLong');
+    addIf(s.Trend_Composite_Score,'sComp','cComp');
+  });
+  return Object.entries(groups).map(([name,G])=>{
+    const comp = G.cComp ? G.sComp/G.cComp : null;
+    return {
+      [outKey]: name,
+      Stocks: G.n,
+      W_Short: G.cShort ? G.sShort/G.cShort : null,
+      W_Medium: G.cMedium ? G.sMedium/G.cMedium : null,
+      W_Long: G.cLong ? G.sLong/G.cLong : null,
+      W_Composite: comp,
+      Simple_Composite: null,
+      Composite_Shrunk: comp,
+      Confidence: 'Scoped',
+    };
+  });
+}
+
+// Scanner watchlist signal summary (SIG_PB/SIG_BO/SIG_CO) — hidden entirely
+// if the trend JSON predates this field or the main script's signal columns
+// weren't available on that run (signal_summary is null in that case).
+function renderSignalStrip(){
+  const ss = DATA.signal_summary;
+  const heading=document.getElementById('signalHeading');
+  const row=document.getElementById('signalRow');
+  const sigSelect=document.getElementById('signalFilter');
+  if(!ss){
+    heading.style.display='none';
+    row.style.display='none';
+    sigSelect.style.display='none';
+    return;
+  }
+  heading.style.display='';
+  row.style.display='';
+  sigSelect.style.display='';
+  const cards=[
+    ['Pullback (PB)', ss.pullback, 'var(--teal)'],
+    ['Breakout (BO)', ss.breakout, 'var(--purple)'],
+    ['Consolidation (CO)', ss.consolidation, 'var(--amber2)'],
+    ['Multi-Signal (2+)', ss.multi_signal, 'var(--green2)'],
+  ];
+  row.innerHTML = cards.map(([l,v,c])=>`
+    <div class="kpi" style="--kc:${c}">
+      <div class="kpi-l">${l}</div><div class="kpi-v">${v}</div><div class="kpi-s">stocks flagged today</div>
+    </div>`).join('');
+}
+
+function renderKpis(stats){
+  const b=stats.breadth.long, total=stats.total;
+  const upPct = total ? Math.round(((b.uptrend+b.strong_uptrend)/total)*100) : 0;
+  const dnPct = total ? Math.round(((b.downtrend+b.strong_downtrend)/total)*100) : 0;
+  const bull = stats.alignment['Full Bullish Alignment']||0;
+  const bear = stats.alignment['Full Bearish Alignment']||0;
+  const compositeLabel = stats.isFullUniverse
+    ? ['Universe Composite', fmtNum(DATA.universe_weighted_composite,1), 'cap+vol-weighted benchmark']
+    : ['Avg Composite', fmtNum(stats.avgComposite,1), 'simple average, this universe'];
+  const kpis=[
+    ['Universe', total, 'stocks classified', 'var(--accent)'],
+    [...compositeLabel, 'var(--purple)'],
+    ['Long-Term Uptrend', upPct+'%', 'above 200D SMA structure', 'var(--green2)'],
+    ['Long-Term Downtrend', dnPct+'%', 'below 200D SMA structure', 'var(--red2)'],
+    ['Full Bullish Alignment', bull, 'short+medium+long all up', 'var(--green2)'],
+    ['Full Bearish Alignment', bear, 'short+medium+long all down', 'var(--red2)'],
+  ];
+  document.getElementById('kpiRow').innerHTML = kpis.map(([l,v,s,c])=>`
+    <div class="kpi" style="--kc:${c}">
+      <div class="kpi-l">${l}</div><div class="kpi-v">${v}</div><div class="kpi-s">${s}</div>
+    </div>`).join('');
+}
+
+function renderBreadthCards(stats){
+  const tf=[['short','Short-Term (1-2 wk)'],['medium','Medium-Term (1-3 mo)'],['long','Long-Term (6-12 mo)']];
+  const colors={strong_uptrend:'#10b981',uptrend:'#34d39980',sideways:'#4a4d55',downtrend:'#f8717180',strong_downtrend:'#ef4444'};
+  const labels={strong_uptrend:'Strong Up',uptrend:'Up',sideways:'Sideways',downtrend:'Down',strong_downtrend:'Strong Down'};
+  document.getElementById('breadthCards').innerHTML = tf.map(([key,title])=>{
+    const b=stats.breadth[key], total=Object.values(b).reduce((a,c)=>a+c,0)||1;
+    const segs=Object.keys(labels).map(k=>{
+      const pct=(b[k]/total*100);
+      return pct>0 ? `<div class="bd-seg" style="width:${pct}%;background:${colors[k]}">${pct>=8?Math.round(pct)+'%':''}</div>` : '';
+    }).join('');
+    const legend=Object.keys(labels).map(k=>`<span><span class="dot" style="background:${colors[k]}"></span>${labels[k]} ${b[k]}</span>`).join('');
+    return `<div class="card" style="margin-bottom:0">
+      <div class="card-h"><div class="card-t">${title}</div></div>
+      <div class="card-b"><div class="bd-bar">${segs}</div><div class="bd-legend">${legend}</div></div>
+    </div>`;
+  }).join('');
+}
+
+const CONF_CLASS={High:'p-u',Medium:'p-s',Low:'p-d',Scoped:'p-nd'};
+function confPill(c){ return `<span class="pill ${CONF_CLASS[c]||'p-nd'}">${c||'—'}</span>`; }
+
+function renderSectorTable(stats){
+  stats = stats || currentBreadthStats;
+  let rows;
+  if(stats.isFullUniverse){
+    rows = DATA.sector_trend_rollup;
+    document.getElementById('sectorBadge').textContent = rows.length+' sectors';
+    if(DATA.rollup_methodology) document.getElementById('methodNote').textContent = DATA.rollup_methodology;
+  } else {
+    rows = computeGroupRollup(stats.stocks, 'sector_name', 'sector_name');
+    document.getElementById('sectorBadge').textContent = rows.length+' sectors (scoped)';
+    document.getElementById('methodNote').textContent =
+      'Scoped to the Breadth Universe selected above — simple per-stock averages, not the full cap+vol-weighted/shrinkage rollup.';
+  }
+  rows = sortRows(rows, sectorSortKey, sectorSortDir);
+  document.getElementById('sectorBody').innerHTML = rows.map(r=>`
+    <tr data-clickable class="${sectorRollupScope===r.sector_name?'row-selected':''}">
+      <td>${r.sector_name}</td><td class="num">${r.Stocks}</td>
+      <td class="num">${fmtNum(r.W_Short)}</td><td class="num">${fmtNum(r.W_Medium)}</td>
+      <td class="num">${fmtNum(r.W_Long)}</td><td class="num" style="font-weight:700">${fmtNum(r.W_Composite)}</td>
+      <td class="num" style="color:var(--text3)">${fmtNum(r.Simple_Composite)}</td>
+      <td class="num" style="font-weight:700;color:var(--accent2)">${fmtNum(r.Composite_Shrunk)}</td>
+      <td>${confPill(r.Confidence)}</td>
+    </tr>`).join('');
+  document.querySelectorAll('#sectorBody tr').forEach((tr,i)=>{
+    tr.addEventListener('click', ()=> selectSectorScope(rows[i].sector_name));
+  });
+}
+
+function renderIndustryTable(stats){
+  stats = stats || currentBreadthStats;
+  const q=(document.getElementById('industrySearch').value||'').toLowerCase();
+  const useBackend = stats.isFullUniverse && !sectorRollupScope;
+  let baseRows, totalCount;
+  if(useBackend){
+    baseRows = DATA.industry_trend_rollup||[];
+    totalCount = baseRows.length;
+  } else {
+    let pool = stats.stocks;
+    if(sectorRollupScope) pool = pool.filter(s=>s.sector_name===sectorRollupScope);
+    baseRows = computeGroupRollup(pool, 'Industry Name', 'Industry Name');
+    totalCount = baseRows.length;
+  }
+  let rows = baseRows.filter(r=>!q || (r['Industry Name']||'').toLowerCase().includes(q));
+  rows = sortRows(rows, industrySortKey, industrySortDir);
+
+  const scopeNote=document.getElementById('industryScopeNote');
+  scopeNote.innerHTML = sectorRollupScope
+    ? `Filtered to sector: <b>${sectorRollupScope}</b> <a href="#" onclick="selectSectorScope('${sectorRollupScope.replace(/'/g,"\\'")}');return false;" style="color:var(--red2)">✕ clear</a>`
+    : '';
+  document.getElementById('industryBadge').textContent = rows.length+' / '+totalCount+' industries';
+  const industryFilterVal = document.getElementById('industryFilter').value;
+  document.getElementById('industryBody').innerHTML = rows.map(r=>`
+    <tr data-clickable class="${industryFilterVal===r['Industry Name']?'row-selected':''}">
+      <td>${r['Industry Name']}</td><td class="num">${r.Stocks}</td>
+      <td class="num">${fmtNum(r.W_Short)}</td><td class="num">${fmtNum(r.W_Medium)}</td>
+      <td class="num">${fmtNum(r.W_Long)}</td><td class="num" style="font-weight:700">${fmtNum(r.W_Composite)}</td>
+      <td class="num" style="color:var(--text3)">${fmtNum(r.Simple_Composite)}</td>
+      <td class="num" style="font-weight:700;color:var(--accent2)">${fmtNum(r.Composite_Shrunk)}</td>
+      <td>${confPill(r.Confidence)}</td>
+    </tr>`).join('');
+  document.querySelectorAll('#industryBody tr').forEach((tr,i)=>{
+    tr.addEventListener('click', ()=> selectIndustryScope(rows[i]['Industry Name']));
+  });
+}
+
+// ── Cross-filtering: clicking a Sector Rollup row scopes the Industry
+// Rollup table (to industries with stocks in that sector) AND the Stock
+// Trend States table (via the existing sectorFilter select). Clicking the
+// same sector again clears it. Clicking an Industry Rollup row scopes only
+// the Stock table, via a new industryFilter select. ──
+function selectSectorScope(name){
+  sectorRollupScope = (sectorRollupScope===name) ? null : name;
+  document.getElementById('sectorFilter').value = sectorRollupScope || '';
+  // A sector change invalidates any previously-selected industry filter
+  // that might not belong to the new sector.
+  document.getElementById('industryFilter').value = '';
+  renderSectorTable(currentBreadthStats);
+  renderIndustryTable(currentBreadthStats);
+  renderStockTable();
+}
+function selectIndustryScope(name){
+  const sel=document.getElementById('industryFilter');
+  sel.value = (sel.value===name) ? '' : name;
+  renderIndustryTable(currentBreadthStats);
+  renderStockTable();
+}
+// Manual dropdown changes (not a row click) should stay in sync with the
+// row-click state too, so highlights and the Industry scope note don't go
+// stale relative to what's actually being shown.
+function onManualSectorFilterChange(){
+  sectorRollupScope = document.getElementById('sectorFilter').value || null;
+  renderSectorTable(currentBreadthStats);
+  renderIndustryTable(currentBreadthStats);
+  renderStockTable();
+}
+function onManualIndustryFilterChange(){
+  renderIndustryTable(currentBreadthStats);
+  renderStockTable();
+}
+
+function populateFilters(){
+  const sectors=[...new Set(DATA.stocks.map(s=>s.sector_name).filter(Boolean))].sort();
+  const industries=[...new Set(DATA.stocks.map(s=>s['Industry Name']).filter(Boolean))].sort();
+  const stages=[...new Set(DATA.stocks.map(s=>s.Market_Stage).filter(Boolean))].sort();
+  const aligns=[...new Set(DATA.stocks.map(s=>s.Trend_Alignment).filter(Boolean))].sort();
+  const fill=(id,arr)=>{
+    const el=document.getElementById(id);
+    arr.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; el.appendChild(o); });
+  };
+  fill('sectorFilter',sectors); fill('industryFilter',industries); fill('stageFilter',stages); fill('alignFilter',aligns);
+
+  // Short/Medium/Long trend-state filters — multi-select checkboxes, fixed order
+  // matching PILL_CLASS (Strong Uptrend → Strong Downtrend), not alphabetical.
+  const TREND_STATES = Object.keys(PILL_CLASS);
+  const trendPresent = new Set();
+  DATA.stocks.forEach(s=>{ [s.Trend_Short,s.Trend_Medium,s.Trend_Long].forEach(v=>{ if(v) trendPresent.add(v); }); });
+  const trendOptions = TREND_STATES.filter(v=>trendPresent.has(v));
+  buildMultiSelect('shortTrendFilter','Short', trendOptions);
+  buildMultiSelect('mediumTrendFilter','Medium', trendOptions);
+  buildMultiSelect('longTrendFilter','Long', trendOptions);
+
+  // Index filter — options are {key, label, count} from index_meta (Idx_* flag
+  // columns produced by build_index_yaml.py / merge_index_flags()). Hidden
+  // gracefully if the trend JSON has no index_meta (e.g. no YAML was present
+  // on that run).
+  const idxSel=document.getElementById('indexFilter');
+  const idxMeta=DATA.index_meta||[];
+  if(idxMeta.length===0){
+    idxSel.style.display='none';
+  }else{
+    idxSel.style.display='';
+    idxMeta.forEach(m=>{
+      const o=document.createElement('option');
+      o.value=m.key; o.textContent=`${m.label} (${m.count})`;
+      idxSel.appendChild(o);
+    });
+  }
+
+  // Score filters — thresholds match the sc() color tiers (95/80/65/50/35/20)
+  // so "Min GQVM: ≥65 (Amber+)" lines up with what the pill colors mean.
+  const SCORE_TIERS = [
+    [95, '≥ 95 (Elite)'], [80, '≥ 80 (Strong)'], [65, '≥ 65 (Amber+)'],
+    [50, '≥ 50 (Avg+)'], [35, '≥ 35'], [20, '≥ 20'],
+  ];
+  document.querySelectorAll('#scoreFilterRow select[data-key]').forEach(sel=>{
+    SCORE_TIERS.forEach(([val,label])=>{
+      const o=document.createElement('option'); o.value=val; o.textContent=label; sel.appendChild(o);
+    });
+  });
+}
+
+function resetScoreFilters(){
+  document.querySelectorAll('#scoreFilterRow select[data-key]').forEach(sel=>sel.value='');
+  renderStockTable();
+}
+
+// ---- Multi-select dropdown widget (Short/Medium/Long trend-state filters) ----
+// Lets the user check multiple states per timeframe, e.g. Short = {Downtrend,
+// Strong Downtrend} AND Long = {Uptrend, Strong Uptrend} at the same time.
+function buildMultiSelect(id, prefix, options){
+  const el=document.getElementById(id);
+  el.innerHTML='';
+  el.dataset.prefix=prefix;
+
+  const btn=document.createElement('div');
+  btn.className='msel-btn';
+  btn.textContent=`${prefix}: Any`;
+  btn.onclick=(e)=>{
+    e.stopPropagation();
+    const willOpen=!el.classList.contains('open');
+    closeAllMsel();
+    if(willOpen){ el.classList.add('open'); positionMselPanel(el); }
+  };
+
+  const panel=document.createElement('div');
+  panel.className='msel-panel';
+  options.forEach(v=>{
+    const row=document.createElement('label');
+    row.className='msel-opt';
+    row.innerHTML=`<input type="checkbox" value="${v}">${v}`;
+    row.querySelector('input').addEventListener('change', ()=>{ updateMselLabel(id); renderStockTable(); });
+    panel.appendChild(row);
+  });
+  const clear=document.createElement('div');
+  clear.className='msel-clear';
+  clear.textContent='Clear';
+  clear.onclick=(e)=>{ e.stopPropagation(); panel.querySelectorAll('input').forEach(i=>i.checked=false); updateMselLabel(id); renderStockTable(); };
+  panel.appendChild(clear);
+
+  el.appendChild(btn);
+  el.appendChild(panel);
+}
+
+function updateMselLabel(id){
+  const el=document.getElementById(id);
+  const prefix=el.dataset.prefix;
+  const checked=[...el.querySelectorAll('input:checked')].map(i=>i.value);
+  const btn=el.querySelector('.msel-btn');
+  if(checked.length===0) btn.textContent=`${prefix}: Any`;
+  else if(checked.length<=2) btn.textContent=`${prefix}: ${checked.join(', ')}`;
+  else btn.textContent=`${prefix}: ${checked.length} selected`;
+}
+
+function getMselValues(id){
+  return [...document.querySelectorAll('#'+id+' input:checked')].map(i=>i.value);
+}
+
+function closeAllMsel(){
+  document.querySelectorAll('.msel.open').forEach(m=>m.classList.remove('open'));
+}
+
+// Panels are position:fixed (so a clipping ancestor like .card{overflow:hidden}
+// can't cut them off) which means we must place them with real viewport
+// coordinates ourselves, clamped so they never run off the right/bottom edge
+// regardless of where the trigger button sits in the filter row.
+function positionMselPanel(msel){
+  const btn=msel.querySelector('.msel-btn');
+  const panel=msel.querySelector('.msel-panel');
+  const r=btn.getBoundingClientRect();
+  const pw=panel.offsetWidth||200, ph=panel.offsetHeight||200;
+  const vw=window.innerWidth, vh=window.innerHeight;
+  let left=r.left;
+  if(left+pw>vw-8) left=Math.max(8, vw-8-pw);
+  let top=r.bottom+4;
+  if(top+ph>vh-8) top=Math.max(8, r.top-ph-4);
+  panel.style.left=left+'px';
+  panel.style.top=top+'px';
+}
+
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.msel')) closeAllMsel();
+});
+// position:fixed panels would drift out of alignment as the page scrolls/
+// resizes, so just close them rather than tracking — reopening is one click.
+window.addEventListener('scroll', closeAllMsel, true);
+window.addEventListener('resize', closeAllMsel);
+
+// Shared by the table render and the Excel export so both always agree on
+// exactly which rows are "currently filtered".
+function getFilteredStocks(){
+  const q=document.getElementById('searchBox').value.toLowerCase();
+  const secF=document.getElementById('sectorFilter').value;
+  const indF=document.getElementById('industryFilter').value;
+  const stageF=document.getElementById('stageFilter').value;
+  const alignF=document.getElementById('alignFilter').value;
+  const shortF=getMselValues('shortTrendFilter');
+  const mediumF=getMselValues('mediumTrendFilter');
+  const longF=getMselValues('longTrendFilter');
+  const idxF=document.getElementById('indexFilter').value;
+  const sigF=document.getElementById('signalFilter').value;
+  const scoreFilters=[...document.querySelectorAll('#scoreFilterRow select[data-key]')]
+    .map(sel=>({key:sel.dataset.key, min:sel.value?Number(sel.value):null}))
+    .filter(f=>f.min!==null);
+
+  function signalMatch(s){
+    if(!sigF) return true;
+    const pb=Number(s.SIG_PB)===1, bo=Number(s.SIG_BO)===1, co=Number(s.SIG_CO)===1;
+    if(sigF==='SIG_PB') return pb;
+    if(sigF==='SIG_BO') return bo;
+    if(sigF==='SIG_CO') return co;
+    if(sigF==='ANY') return pb||bo||co;
+    if(sigF==='MULTI') return (pb+bo+co)>=2;
+    return true;
+  }
+
+  let rows=DATA.stocks.filter(s=>
+    (!q || (s['Stock Name']||'').toLowerCase().includes(q) || (s.sector_name||'').toLowerCase().includes(q)) &&
+    (!secF || s.sector_name===secF) &&
+    (!indF || s['Industry Name']===indF) &&
+    (!stageF || s.Market_Stage===stageF) &&
+    (!alignF || s.Trend_Alignment===alignF) &&
+    (!shortF.length || shortF.includes(s.Trend_Short)) &&
+    (!mediumF.length || mediumF.includes(s.Trend_Medium)) &&
+    (!longF.length || longF.includes(s.Trend_Long)) &&
+    (!idxF || Number(s[idxF])===1) &&
+    signalMatch(s) &&
+    scoreFilters.every(f => s[f.key]!==null && s[f.key]!==undefined && Number(s[f.key])>=f.min)
+  );
+  rows.sort((a,b)=>{
+    const av=a[sortKey], bv=b[sortKey];
+    if(av===null||av===undefined) return 1;
+    if(bv===null||bv===undefined) return -1;
+    if(typeof av==='string') return av.localeCompare(bv)*sortDir*-1;
+    return (av-bv)*sortDir*-1;
+  });
+  return rows;
+}
+
+wireSortable('#stockTable',
+  ()=>({key:sortKey, dir:sortDir}),
+  (k,d)=>{ sortKey=k; sortDir=d; },
+  renderStockTable);
+wireSortable('#sectorTable',
+  ()=>({key:sectorSortKey, dir:sectorSortDir}),
+  (k,d)=>{ sectorSortKey=k; sectorSortDir=d; },
+  ()=>renderSectorTable(currentBreadthStats));
+wireSortable('#industryTable',
+  ()=>({key:industrySortKey, dir:industrySortDir}),
+  (k,d)=>{ industrySortKey=k; industrySortDir=d; },
+  ()=>renderIndustryTable(currentBreadthStats));
+
+function fmtShares(v){
+  if(v===null||v===undefined||isNaN(v)) return '—';
+  v=Number(v);
+  if(v>=1e7) return (v/1e7).toFixed(2)+'Cr';
+  if(v>=1e5) return (v/1e5).toFixed(2)+'L';
+  return v.toLocaleString('en-IN');
+}
+function fmtPrice(v){ return (v===null||v===undefined||isNaN(v)) ? '—' : '₹'+Number(v).toLocaleString('en-IN',{maximumFractionDigits:2}); }
+function fmtPct(v){ if(v===null||v===undefined||isNaN(v)) return '—'; const n=Number(v); return (n>0?'+':'')+n.toFixed(2)+'%'; }
+function fmtMCap(v){
+  if(v===null||v===undefined||isNaN(v)) return '—';
+  const n=Number(v); // already in ₹ Cr per the source feed
+  if(n>=1e5) return (n/1e5).toFixed(2)+'L Cr';
+  return n.toLocaleString('en-IN',{maximumFractionDigits:0});
+}
+
+// ── Conditional formatting — ported from the main dashboard's actual live
+// functions: sc() for scores (verified via grep — scorePill() in that file
+// is defined but never called anywhere, so it was the wrong function to
+// port the first time), rankStr()/rotStr() for ranks. ──
+function sc(val){
+  if(val===null||val===undefined||isNaN(val)) return '<span class="sc scna">—</span>';
+  const num=Number(val);
+  const cls = num>=95?'sc95':num>=80?'sc80':num>=65?'sc65':num>=50?'sc50':num>=35?'sc35':num>=20?'sc20':'sc05';
+  return `<span class="sc ${cls}">${num.toFixed(1)}</span>`;
+}
+// Scanner watchlist signal flag (SIG_PB/SIG_BO/SIG_CO — boolean 0/1 hits,
+// distinct from the continuous S_Pullback/S_Breakout/S_Consol scores).
+function sigBadge(val){
+  if(val===null||val===undefined) return '<span class="neu">—</span>';
+  return Number(val)===1
+    ? '<span class="pill p-su">● Active</span>'
+    : '<span class="neu" style="font-size:10px">—</span>';
+}
+function rankStr(rankVal, sizeVal){
+  if(rankVal===null||rankVal===undefined||isNaN(rankVal)) return '<span class="neu ri">—</span>';
+  const r=Number(rankVal), s=Number(sizeVal)||0;
+  const p=r/(s||1);
+  const cls = p<=.1?'rk-top':p<=.25?'rk-good':p<=.5?'rk-mid':p<=.75?'rk-low':'rk-bot';
+  return `<span class="${cls} ri mono">${Math.round(r)}/${Math.round(s||0)}</span>`;
+}
+// Total sector/industry counts — the correct denominator for Sec_Rot/Ind_Rot
+// (rank of the SECTOR/INDUSTRY itself among all sectors/industries), as
+// opposed to Sector_Size/Industry_Size (stock count WITHIN one sector/
+// industry — correct for Rank_In_Sector/Rank_In_Industry instead). Falls
+// back to the rollup array lengths for older trend JSON files that predate
+// the n_sectors/n_industries fields.
+function ns(){ return DATA.n_sectors || (DATA.sector_trend_rollup||[]).length || 1; }
+function ni(){ return DATA.n_industries || (DATA.industry_trend_rollup||[]).length || 1; }
+
+function toggleExtCols(){
+  document.getElementById('stockTable').classList.toggle('show-ext', document.getElementById('extToggle').checked);
+}
+
+function renderStockTable(){
+  const rows = getFilteredStocks();
+
+  document.getElementById('stockBadge').textContent = rows.length+' / '+DATA.stocks.length+' stocks';
+  document.getElementById('stockBody').innerHTML = rows.slice(0,500).map(s=>`
+    <tr>
+      <td><b>${s['Stock Name']||''}</b><div style="font-size:9px;color:var(--text3)" class="mono">${s['NSE Code']||''}</div></td>
+      <td>${s.sector_name||''}</td>
+      <td class="num mono">${fmtPrice(s['Current Price'])}</td>
+      <td class="num mono ${pctClass(s['Day change %'])}">${fmtPct(s['Day change %'])}</td>
+      <td class="num mono ${pctClass(s['Week change %'])}">${fmtPct(s['Week change %'])}</td>
+      <td class="num mono">${fmtMCap(s['Market Capitalization'])}<div style="font-size:9px;color:var(--text3)">${s.MCap_Cat||''}</div></td>
+      <td class="num">${pill(s.Trend_Short)}<br><span class="mono" style="font-size:9px;color:var(--text3)">${fmtNum(s.Trend_Short_Score,1)}</span></td>
+      <td class="num">${pill(s.Trend_Medium)}<br><span class="mono" style="font-size:9px;color:var(--text3)">${fmtNum(s.Trend_Medium_Score,1)}</span></td>
+      <td class="num">${pill(s.Trend_Long)}<br><span class="mono" style="font-size:9px;color:var(--text3)">${fmtNum(s.Trend_Long_Score,1)}</span></td>
+      <td style="font-size:10.5px;color:var(--text2)">${s.Market_Stage||''}</td>
+      <td class="num" style="font-weight:700">${sc(s.Trend_Composite_Score)}</td>
+      <td style="font-size:10.5px">${s.Trend_Alignment||''}</td>
+      <td class="num">${sc(s.Conviction_Score)}</td>
+      <td class="num ext-col">${sc(s.S_GQVM)}</td>
+      <td class="num ext-col">${sc(s.S_Growth)}</td>
+      <td class="num ext-col">${sc(s.S_Quality)}</td>
+      <td class="num ext-col">${sc(s.S_Value)}</td>
+      <td class="num ext-col">${sc(s.S_Mom)}</td>
+      <td class="num ext-col">${sc(s.S_Pullback)}</td>
+      <td class="ext-col">${sigBadge(s.SIG_PB)}</td>
+      <td class="num ext-col">${sc(s.S_Breakout)}</td>
+      <td class="ext-col">${sigBadge(s.SIG_BO)}</td>
+      <td class="num ext-col">${sc(s.S_Consol)}</td>
+      <td class="ext-col">${sigBadge(s.SIG_CO)}</td>
+      <td class="num ext-col mono ${pctClass(s['Month Change %'])}">${fmtPct(s['Month Change %'])}</td>
+      <td class="num ext-col mono ${pctClass(s['Qtr Change %'])}">${fmtPct(s['Qtr Change %'])}</td>
+      <td class="num ext-col mono">${fmtPct(s['% Distance from 52week high'])}</td>
+      <td class="num ext-col mono">${fmtPct(s['% Distance from 52week low'])}</td>
+      <td class="num ext-col">${rankStr(s.Sec_Rot, ns())}</td>
+      <td class="num ext-col">${rankStr(s.Rank_In_Sector, s.Sector_Size)}</td>
+      <td class="num ext-col">${rankStr(s.Ind_Rot, ni())}</td>
+      <td class="num ext-col">${rankStr(s.Rank_In_Industry, s.Industry_Size)}</td>
+      <td class="num ext-col">${fmtShares(s['Number Of Shares Qtr End'])}</td>
+    </tr>`).join('');
+  if(rows.length>500){
+    const colspan = document.getElementById('stockTable').classList.contains('show-ext') ? 31 : 14;
+    document.getElementById('stockBody').innerHTML += `<tr><td colspan="${colspan}" style="text-align:center;color:var(--text3);padding:12px">Showing top 500 of ${rows.length} matching rows — narrow your filter/search to see others.</td></tr>`;
+  }
+}
+
+// ── Excel export — exports every currently-filtered row (not just the 500
+// shown on screen), with plain numeric/text values (not colored HTML), via
+// SheetJS loaded from cdnjs. Column set matches the full table incl. the
+// "Show Scores & Ranks" extension columns, regardless of whether that
+// toggle is currently on — the export is meant to be a complete data pull.
+function exportToExcel(){
+  if(typeof XLSX === 'undefined'){
+    alert('Excel export library failed to load (no internet access?). Try again once you have a connection.');
+    return;
+  }
+  const rows = getFilteredStocks();
+  if(rows.length === 0){
+    alert('No rows match the current filters — nothing to export.');
+    return;
+  }
+
+  const data = rows.map(s => ({
+    'Stock Name': s['Stock Name'] || '',
+    'NSE Code': s['NSE Code'] || '',
+    'Sector': s.sector_name || '',
+    'Industry': s['Industry Name'] || '',
+    'MCap Category': s.MCap_Cat || '',
+    'Market Cap (₹Cr)': s['Market Capitalization'] ?? null,
+    'Current Price': s['Current Price'] ?? null,
+    'Day %': s['Day change %'] ?? null,
+    'Week %': s['Week change %'] ?? null,
+    'Month %': s['Month Change %'] ?? null,
+    'Qtr %': s['Qtr Change %'] ?? null,
+    'From 52W High %': s['% Distance from 52week high'] ?? null,
+    'From 52W Low %': s['% Distance from 52week low'] ?? null,
+    'Trend Short': s.Trend_Short || '',
+    'Trend Short Score': s.Trend_Short_Score ?? null,
+    'Trend Medium': s.Trend_Medium || '',
+    'Trend Medium Score': s.Trend_Medium_Score ?? null,
+    'Trend Long': s.Trend_Long || '',
+    'Trend Long Score': s.Trend_Long_Score ?? null,
+    'Market Stage': s.Market_Stage || '',
+    'Trend Composite': s.Trend_Composite || '',
+    'Trend Composite Score': s.Trend_Composite_Score ?? null,
+    'Trend Alignment': s.Trend_Alignment || '',
+    'Conviction Score': s.Conviction_Score ?? null,
+    'GQVM': s.S_GQVM ?? null,
+    'Growth': s.S_Growth ?? null,
+    'Quality': s.S_Quality ?? null,
+    'Value': s.S_Value ?? null,
+    'Momentum': s.S_Mom ?? null,
+    'Pullback': s.S_Pullback ?? null,
+    'PB Signal Active': s.SIG_PB!==undefined ? (Number(s.SIG_PB)===1 ? 'Yes':'No') : null,
+    'Breakout': s.S_Breakout ?? null,
+    'BO Signal Active': s.SIG_BO!==undefined ? (Number(s.SIG_BO)===1 ? 'Yes':'No') : null,
+    'Consolidation': s.S_Consol ?? null,
+    'CO Signal Active': s.SIG_CO!==undefined ? (Number(s.SIG_CO)===1 ? 'Yes':'No') : null,
+    'Sector Rank': s.Sec_Rot ?? null,
+    'Sector Rank Total': ns(),
+    'In-Sector Rank': s.Rank_In_Sector ?? null,
+    'Sector Size': s.Sector_Size ?? null,
+    'Industry Rank': s.Ind_Rot ?? null,
+    'Industry Rank Total': ni(),
+    'In-Industry Rank': s.Rank_In_Industry ?? null,
+    'Industry Size': s.Industry_Size ?? null,
+    'Number Of Shares Qtr End': s['Number Of Shares Qtr End'] ?? null,
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = Object.keys(data[0]).map(k => ({ wch: Math.max(10, Math.min(24, k.length + 2)) }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Trend State');
+
+  const dateStr = (DATA.date || new Date().toISOString().slice(0,10));
+  XLSX.writeFile(wb, `Takshashila_Trend_State_${dateStr}.xlsx`);
+}
+</script>
+</body>
+</html>
